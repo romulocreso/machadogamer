@@ -116,6 +116,43 @@ a { color: inherit; text-decoration: none; }
 .stream-chat { overflow: hidden; min-height: 480px; }
 .stream-chat iframe { width: 100%; height: 100%; min-height: 480px; border: 0; display: block; }
 
+/* ===================== CARROSSEL DE VODs / CLIPES ===================== */
+.vods { margin-top: 34px; }
+.vods-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.vods-head h3 { font-family: 'Russo One', sans-serif; font-size: 1.2rem; }
+.carousel-nav { display: flex; gap: 8px; }
+.car-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  font-size: 1.5rem; line-height: 1; cursor: pointer; transition: .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.car-btn:hover { border-color: var(--accent); color: var(--accent-2); transform: translateY(-2px); }
+
+.carousel {
+  display: flex; gap: 16px; overflow-x: auto;
+  scroll-snap-type: x mandatory; padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;            /* swipe suave no iOS */
+  scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+}
+.carousel::-webkit-scrollbar { height: 8px; }
+.carousel::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 8px; }
+.car-slide { flex: 0 0 360px; max-width: 86vw; scroll-snap-align: start; }
+.vod-frame {
+  position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius);
+  overflow: hidden; border: 1px solid var(--border); background: #000;
+}
+.vod-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vod-title { margin-top: 8px; font-size: .9rem; color: var(--text-dim); }
+.vod-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  aspect-ratio: 16 / 9; border: 1px dashed var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text-dim); text-align: center; transition: .2s;
+}
+.vod-empty:hover { border-color: var(--accent); color: var(--text); }
+.vod-empty-ic { font-size: 2.2rem; }
+.vod-empty strong { color: var(--text); }
+
 /* ===================== SOBRE + GALERIA ===================== */
 .about-grid { display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: center; }
 .about-photo { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); aspect-ratio: 1; object-fit: cover; }
@@ -178,6 +215,7 @@ a { color: inherit; text-decoration: none; }
   .about-stats { justify-content: center; }
   .gallery { grid-template-columns: repeat(2, 1fr); }
   .schedule { grid-template-columns: 1fr; }
+  .car-slide { flex-basis: 80vw; }
 }
 
 @media (max-width: 720px) {

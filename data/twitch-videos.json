@@ -1,0 +1,5 @@
+{
+  "_comentario": "Lista de videos/clipes do carrossel. type: 'video' (VOD) ou 'clip'. id: o numero do VOD ou o slug do clipe.",
+  "channel": "machadogameroficial",
+  "videos": []
+}
