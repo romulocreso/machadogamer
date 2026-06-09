@@ -1,0 +1,73 @@
+name: Atualiza videos da Twitch
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'   # a cada 12 horas
+  workflow_dispatch:          # botão "Run workflow" (manual)
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Buscar VODs e clipes (API oficial da Twitch)
+        env:
+          CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+        run: |
+          set -e
+          LOGIN=machadogameroficial
+
+          if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+            echo "::warning::Faltam os secrets TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET. Configure-os e rode de novo."
+            exit 0
+          fi
+
+          # 1) token de aplicacao (client credentials - nao precisa de login do usuario)
+          TOKEN=$(curl -s -X POST "https://id.twitch.tv/oauth2/token" \
+            -d "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&grant_type=client_credentials" \
+            | jq -r '.access_token')
+          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
+            echo "::error::Nao consegui obter o token (confira Client ID/Secret)."; exit 1
+          fi
+          AUTH=(-H "Client-Id: $CLIENT_ID" -H "Authorization: Bearer $TOKEN")
+
+          # 2) id do canal a partir do login
+          BID=$(curl -s "${AUTH[@]}" "https://api.twitch.tv/helix/users?login=$LOGIN" | jq -r '.data[0].id')
+          echo "broadcaster_id=$BID"
+          if [ -z "$BID" ] || [ "$BID" = "null" ]; then
+            echo "::error::Canal '$LOGIN' nao encontrado."; exit 1
+          fi
+
+          # 3) VODs/destaques mais recentes (ate 8)
+          VIDEOS=$(curl -s "${AUTH[@]}" \
+            "https://api.twitch.tv/helix/videos?user_id=$BID&first=8&sort=time" \
+            | jq '[.data[] | {type:"video", id:.id, title:.title}]')
+
+          # 4) clipes mais vistos (ate 8)
+          CLIPS=$(curl -s "${AUTH[@]}" \
+            "https://api.twitch.tv/helix/clips?broadcaster_id=$BID&first=8" \
+            | jq '[.data[] | {type:"clip", id:.id, title:.title}]')
+
+          mkdir -p data
+          jq -n --arg ch "$LOGIN" --argjson v "$VIDEOS" --argjson c "$CLIPS" \
+            '{channel: $ch, videos: ($v + $c)}' > data/twitch-videos.json
+
+          echo "--- data/twitch-videos.json ---"
+          cat data/twitch-videos.json
+
+      - name: Commitar se houve mudanca
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/twitch-videos.json
+          if git diff --staged --quiet; then
+            echo "Sem mudancas."
+          else
+            git commit -m "chore: atualiza videos da Twitch"
+            git push
+          fi
