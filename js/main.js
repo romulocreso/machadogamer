@@ -34,10 +34,13 @@ if (twEl) {
     .catch(() => { twEl.textContent = '—'; });
 }
 
-// ===== Seguidores do Instagram (número manual) =====
-// O Instagram não permite leitura automática gratuita; edite data-count no HTML.
+// ===== Seguidores do Instagram (atualizado por GitHub Action) =====
+// Um workflow lê o perfil a cada 6h e grava data/instagram.json.
+// Se a leitura falhar, mantém o último valor escrito no HTML.
 const igEl = document.getElementById('igFollowers');
 if (igEl) {
-  const n = parseInt(igEl.dataset.count || '0', 10);
-  igEl.textContent = Number.isFinite(n) ? n.toLocaleString('pt-BR') : '0';
+  fetch('data/instagram.json', { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d) => { if (d && d.followers) igEl.textContent = d.followers; })
+    .catch(() => { /* mantém o valor já presente no HTML */ });
 }

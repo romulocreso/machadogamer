@@ -17,7 +17,7 @@ Tudo que você precisa trocar está marcado no `index.html` com o comentário `<
 | Horários das lives | `index.html` → seção "Agenda" |
 | Links de redes (YouTube, TikTok, Discord) | `index.html` → seção "Redes" (descomente os blocos) |
 | Seguidores Twitch | **Automático** — atualiza sozinho via DecAPI (não precisa mexer) |
-| Seguidores Instagram | Manual — edite `data-count="0"` no `index.html` (seção "Sobre") |
+| Seguidores Instagram | **Automático** — um GitHub Action lê o perfil a cada 6h e grava `data/instagram.json` (número arredondado, ex.: "29K") |
 
 ### Trocar uma imagem
 1. Salve sua imagem na pasta `assets/` (ex.: `perfil.jpg`).
