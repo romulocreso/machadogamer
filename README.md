@@ -16,7 +16,8 @@ Tudo que você precisa trocar está marcado no `index.html` com o comentário `<
 | Foto de perfil, logo, banner, galeria | pasta `assets/` (veja `assets/README.txt`) |
 | Horários das lives | `index.html` → seção "Agenda" |
 | Links de redes (YouTube, TikTok, Discord) | `index.html` → seção "Redes" (descomente os blocos) |
-| Números (seguidores, lives/semana) | `index.html` → `about-stats` |
+| Seguidores Twitch | **Automático** — atualiza sozinho via DecAPI (não precisa mexer) |
+| Seguidores Instagram | Manual — edite `data-count="0"` no `index.html` (seção "Sobre") |
 
 ### Trocar uma imagem
 1. Salve sua imagem na pasta `assets/` (ex.: `perfil.jpg`).
